@@ -1,1 +1,144 @@
-kev1
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { text-align: center; margin-top: 18px; }
+        h1 { font-size: 28px; margin-bottom: 10px; }
+        table { margin: 20px auto; border-collapse: collapse; width: 90%; max-width: 800px; }
+        th, td { padding: 12px; border: 1px solid #ddd; text-align: center; }
+        td:nth-child(1) { font-weight: bold;  font-size: 20px; }
+        td:nth-child(2) { font-weight: bold;  font-size: 26px; }
+        td:nth-child(3) { font-size: 12px; }
+        td:nth-child(4),
+        td:nth-child(5),
+        td:nth-child(6) { font-size: 16px; }
+        th { background-color: #f4f4f4; }
+        td.date-time-column { 
+            width: 400px; /* Set a wider column for date/time */
+        }
+        td[style*="background-color"] 
+        img {
+            width: 500px; /* Adjust as needed */
+        }        
+    </style>
+</head>
+<body>
+    <div class="container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Community</th>
+                    <th>Current AQHI</th>
+                    <th>Last Updated</th>
+                    <th>Forecast Today</th>
+                    <th>Forecast Tonight</th>
+                    <th>Forecast Tomorrow</th>
+                </tr>
+            </thead>
+            <tbody id="aqhiTableBody">
+                <!-- Rows will be inserted dynamically -->
+            </tbody>
+        </table>
+        <img src="aep-aqhi-scale.png">
+    </div>
+    
+    <script>
+        function validateAQHI(aqhi) {
+            return Number(aqhi) > 10 ? '10+' : aqhi;
+        }
+
+        function getAQHIColor(aqhi) {
+            const aqhiNumeric = Number(aqhi);
+            if (isNaN(aqhiNumeric)) {
+                return "#D3D3D3"; // Gray for invalid numeric values
+            } else if (aqhiNumeric === 1) {
+                return "#01cbff"; // HEX code for AQHI 1
+            } else if (aqhiNumeric === 2) {
+                return "#0099cb"; // HEX code for AQHI 2
+            } else if (aqhiNumeric === 3) {
+                return "#016797"; // HEX code for AQHI 3
+            } else if (aqhiNumeric === 4) {
+                return "#fffe03"; // HEX code for AQHI 4
+            } else if (aqhiNumeric === 5) {
+                return "#ffcb00"; // HEX code for AQHI 5
+            } else if (aqhiNumeric === 6) {
+                return "#ff9835"; // HEX code for AQHI 6
+            } else if (aqhiNumeric === 7) {
+                return "#fd6866"; // HEX code for AQHI 7
+            } else if (aqhiNumeric === 8) {
+                return "#fe0002"; // HEX code for AQHI 8
+            } else if (aqhiNumeric === 9) {
+                return "#cc0001"; // HEX code for AQHI 9
+            } else if (aqhiNumeric === 10) {
+                return "#9a0100"; // HEX code for AQHI 10
+            } else {
+                return "#D3D3D3"; // Default to gray for any unexpected values
+            }
+        }
+
+        async function fetchAQHI() {
+            const url = "https://data.environment.alberta.ca/EdwServices/aqhi/odata/CommunityAqhis?$format=json";
+            const stations = ["Drayton Valley", "Edson", "Genesee", "Hinton", "Steeper", "Jasper"];
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                const tableBody = document.getElementById('aqhiTableBody');
+                
+                stations.forEach(stationName => {
+                    const stationData = data.value.find(community => community.CommunityName === stationName);
+                    if (stationData) {
+                        const currentAQHI = stationData.Aqhi || "Not Available";
+                        const forecastToday = stationData.ForecastToday || "Forecast Unavailable";
+                        const forecastTonight = stationData.ForecastTonight || "Forecast Unavailable";
+                        const forecastTomorrow = stationData.ForecastTomorrow || "Forecast Unavailable";
+                        const readingDate = stationData.ReadingDate ? new Date(stationData.ReadingDate).toLocaleString() : "N/A";
+                        
+                        const allUnavailable = (
+                            forecastToday === "Forecast Unavailable" &&
+                            forecastTonight === "Forecast Unavailable" &&
+                            forecastTomorrow === "Forecast Unavailable"
+                        );
+                        
+                        const row = document.createElement('tr');
+
+                // Start building the row
+                let rowHTML = `
+                    <td>${stationName}</td>
+                    <td style="background-color: ${getAQHIColor(currentAQHI)}">${currentAQHI}</td>
+                    <td>${readingDate}</td>
+                `;
+
+                if (allUnavailable) {
+                    // One merged cell
+                    rowHTML += `<td colspan="3" style="text-align:center;">Forecast Unavailable</td>`;
+                } else {
+                    // Three individual forecast cells
+                    rowHTML += `
+                        <td style="background-color: ${getAQHIColor(forecastToday)}">${forecastToday}</td>
+                        <td style="background-color: ${getAQHIColor(forecastTonight)}">${forecastTonight}</td>
+                        <td style="background-color: ${getAQHIColor(forecastTomorrow)}">${forecastTomorrow}</td>
+                    `;
+                }
+
+                row.innerHTML = rowHTML;
+                tableBody.appendChild(row);
+            } else {
+                        console.warn(`No data found for station: ${stationName}`);
+                    }
+                });
+            } catch (error) {
+                console.error('Error fetching AQHI data:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchAQHI();
+            setInterval(fetchAQHI, 600000); // refresh every 10 minutes (600,000 ms)
+        });
+    </script>
+</body>
+</html>
+
