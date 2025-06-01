@@ -102,6 +102,8 @@
                 return "#cc0001"; // HEX code for AQHI 9
             } else if (aqhiNumeric === 10) {
                 return "#9a0100"; // HEX code for AQHI 10
+            } else if (aqhiNumeric > 10) {
+                return "#640100"; // HEX code for AQHI 10+
             } else {
                 return "#D3D3D3"; // Default to gray for any unexpected values
             }
@@ -119,16 +121,27 @@
                 stations.forEach(stationName => {
                     const stationData = data.value.find(community => community.CommunityName === stationName);
                     if (stationData) {
-                        const currentAQHI = stationData.Aqhi || "Not Available";
-                        const forecastToday = stationData.ForecastToday || "Forecast Unavailable";
-                        const forecastTonight = stationData.ForecastTonight || "Forecast Unavailable";
-                        const forecastTomorrow = stationData.ForecastTomorrow || "Forecast Unavailable";
-                        const readingDate = stationData.ReadingDate ? new Date(stationData.ReadingDate).toLocaleString() : "N/A";
+                       // const rawAQHI = stationData.Aqhi;
+						const rawAQHI = 14; // Hardcoded test value
+	                        const displayAQHI = validateAQHI(rawAQHI || "Not Available");
+	                        const displaycolor = getAQHIColor(rawAQHI || "Not Available");
                         
+                        // const forecastToday_raw = stationData.ForecastToday || "Forecast Unavailable";
+			            const forecastToday_raw = 14;
+				            const displayAQHI_1 = validateAQHI(forecastToday_raw || "Not Available");
+	                        const displaycolor_1 = getAQHIColor(forecastToday_raw || "Not Available");
+                        const forecastTonight_raw = stationData.ForecastTonight || "Forecast Unavailable";
+				            const displayAQHI_2 = validateAQHI(forecastTonight_raw || "Not Available");
+	                        const displaycolor_2 = getAQHIColor(forecastTonight_raw || "Not Available");			    
+                        const forecastTomorrow_raw = stationData.ForecastTomorrow || "Forecast Unavailable";
+				            const displayAQHI_3 = validateAQHI(forecastTomorrow_raw || "Not Available");
+	                        const displaycolor_3 = getAQHIColor(forecastTomorrow_raw || "Not Available");					    
+                        const readingDate = stationData.ReadingDate ? new Date(stationData.ReadingDate).toLocaleString() : "N/A";
+
                         const allUnavailable = (
-                            forecastToday === "Forecast Unavailable" &&
-                            forecastTonight === "Forecast Unavailable" &&
-                            forecastTomorrow === "Forecast Unavailable"
+                            forecastToday_raw === "Forecast Unavailable" &&
+                            forecastTonight_raw === "Forecast Unavailable" &&
+                            forecastTomorrow_raw === "Forecast Unavailable"
                         );
                         
                         const row = document.createElement('tr');
@@ -136,7 +149,7 @@
                 // Start building the row
                 let rowHTML = `
                     <td>${stationName}</td>
-                    <td style="background-color: ${getAQHIColor(currentAQHI)}">${currentAQHI}</td>
+                    <td style="background-color: ${displaycolor}">${displayAQHI}</td>
                     <td>${readingDate}</td>
                 `;
 
@@ -146,9 +159,9 @@
                 } else {
                     // Three individual forecast cells
                     rowHTML += `
-                        <td style="background-color: ${getAQHIColor(forecastToday)}">${forecastToday}</td>
-                        <td style="background-color: ${getAQHIColor(forecastTonight)}">${forecastTonight}</td>
-                        <td style="background-color: ${getAQHIColor(forecastTomorrow)}">${forecastTomorrow}</td>
+        			  <td style="background-color: ${displaycolor_1}">${displayAQHI_1}</td>
+        			  <td style="background-color: ${displaycolor_2}">${displayAQHI_2}</td>
+        			  <td style="background-color: ${displaycolor_3}">${displayAQHI_3}</td>
                     `;
                 }
 
