@@ -121,20 +121,20 @@
                 stations.forEach(stationName => {
                     const stationData = data.value.find(community => community.CommunityName === stationName);
                     if (stationData) {
-                       // const rawAQHI = stationData.Aqhi;
-						const rawAQHI = 14; // Hardcoded test value
+                       const rawAQHI = stationData.Aqhi;
+		       // const rawAQHI = 14; // Hardcoded test value
 	                        const displayAQHI = validateAQHI(rawAQHI || "Not Available");
 	                        const displaycolor = getAQHIColor(rawAQHI || "Not Available");
                         
-                        // const forecastToday_raw = stationData.ForecastToday || "Forecast Unavailable";
-			            const forecastToday_raw = 14;
-				            const displayAQHI_1 = validateAQHI(forecastToday_raw || "Not Available");
+                        const forecastToday_raw = stationData.ForecastToday || "Forecast Unavailable";
+		 	// const forecastToday_raw = 14;
+				const displayAQHI_1 = validateAQHI(forecastToday_raw || "Not Available");
 	                        const displaycolor_1 = getAQHIColor(forecastToday_raw || "Not Available");
                         const forecastTonight_raw = stationData.ForecastTonight || "Forecast Unavailable";
-				            const displayAQHI_2 = validateAQHI(forecastTonight_raw || "Not Available");
+				const displayAQHI_2 = validateAQHI(forecastTonight_raw || "Not Available");
 	                        const displaycolor_2 = getAQHIColor(forecastTonight_raw || "Not Available");			    
                         const forecastTomorrow_raw = stationData.ForecastTomorrow || "Forecast Unavailable";
-				            const displayAQHI_3 = validateAQHI(forecastTomorrow_raw || "Not Available");
+				const displayAQHI_3 = validateAQHI(forecastTomorrow_raw || "Not Available");
 	                        const displaycolor_3 = getAQHIColor(forecastTomorrow_raw || "Not Available");					    
                         const readingDate = stationData.ReadingDate ? new Date(stationData.ReadingDate).toLocaleString() : "N/A";
 
