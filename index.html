@@ -62,6 +62,9 @@
                 <!-- Rows will be inserted dynamically -->
             </tbody>
         </table>
+	  <footer style="margin-top:20px; font-size: 13px; text-align: center;">
+	    <p><sup>1</sup> Monitored by AEPA, not validated by WCAS</p>
+	  </footer>
         <img src="aep-aqhi-scale.png">
     </div>
     
@@ -120,8 +123,10 @@
                 
                 stations.forEach(stationName => {
                     const stationData = data.value.find(community => community.CommunityName === stationName);
-                    if (stationData) {
-                       const rawAQHI = stationData.Aqhi;
+	                let displayName = stationName;
+		                if (displayName === "Jasper") displayName += "<sup>1</sup>";
+						
+                       		const rawAQHI = stationData.Aqhi;
 		       // const rawAQHI = 14; // Hardcoded test value
 	                        const displayAQHI = validateAQHI(rawAQHI || "Not Available");
 	                        const displaycolor = getAQHIColor(rawAQHI || "Not Available");
@@ -148,7 +153,7 @@
 
                 // Start building the row
                 let rowHTML = `
-                    <td>${stationName}</td>
+                    <td>${displayName}</td>
                     <td style="background-color: ${displaycolor}">${displayAQHI}</td>
                     <td>${readingDate}</td>
                 `;
@@ -168,7 +173,7 @@
                 row.innerHTML = rowHTML;
                 tableBody.appendChild(row);
             } else {
-                        console.warn(`No data found for station: ${stationName}`);
+                        console.warn(`No data found for station: ${displayName}`);
                     }
                 });
             } catch (error) {
