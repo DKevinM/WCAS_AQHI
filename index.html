@@ -123,6 +123,7 @@
                 
                 stations.forEach(stationName => {
                     const stationData = data.value.find(community => community.CommunityName === stationName);
+			if (stationData) {
 	                let displayName = stationName;
 		                if (displayName === "Jasper") displayName += "<sup>1</sup>";
 						
