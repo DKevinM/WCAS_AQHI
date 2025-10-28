@@ -111,7 +111,7 @@
 
         async function fetchAQHI() {
             const url = "https://data.environment.alberta.ca/EdwServices/aqhi/odata/CommunityAqhis?$format=json";
-            const stations = ["Drayton Valley", "Edson", "Genesee", "Hinton", "Steeper", "Jasper"];
+            const stations = ["Drayton Valley", "Edson", "Genesee", "Hinton", "Jasper", "Steeper"];
             try {
                 const response = await fetch(url);
                 const data = await response.json();
